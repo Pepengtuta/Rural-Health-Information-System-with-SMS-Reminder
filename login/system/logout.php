@@ -1,8 +1,11 @@
 <?php 
 session_start();
-if(!empty($_SESSION['name']))
-{
-	unset($_SESSION['name']);
-	header('location:/../Mothers_Book/login/index.php');
+if (!empty($_SESSION['name'])) {
+    unset($_SESSION['name']);
+    unset($_SESSION['username']);
+    unset($_SESSION['role']);
+    session_destroy();
 }
+header('location:../index.php');
+exit();
 ?>

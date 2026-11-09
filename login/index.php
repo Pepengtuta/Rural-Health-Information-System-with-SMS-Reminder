@@ -1,3 +1,27 @@
+<?php
+session_start();
+include('system/includes/connection.php');
+
+$msg = "";
+if (isset($_POST['login']) || isset($_REQUEST['login'])) {
+    $username = mysqli_real_escape_string($conn, $_REQUEST['username']);
+    $pwd = mysqli_real_escape_string($conn, $_REQUEST['pwd']);
+    
+    $fetch_query = mysqli_query($conn, "SELECT * FROM tbl_employee WHERE username ='$username' AND password = '$pwd'");
+    if ($fetch_query && mysqli_num_rows($fetch_query) > 0) {
+        $data = mysqli_fetch_array($fetch_query);
+        $name = $data['first_name'] . ' ' . $data['last_name'];
+        $role = $data['role'];
+        $_SESSION['name'] = $name; 
+        $_SESSION['username'] = $username; 
+        $_SESSION['role'] = $role;
+        header('location:system/dashboard.php');
+        exit();
+    } else {
+        $msg = "Incorrect login details.";
+    }
+}
+?>
 <!doctype html>
 <html lang="en">
   <head>
@@ -39,47 +63,24 @@
 						<div class="login-wrap p-4 p-md-6">
                             <h5 class="text-center mb-3">Mother's Book: <br>Rural Health Information System with SMS Reminder for <br>Laguinbanua East, Numancia, Aklan</h5>
                             <form name="form" action="" method="POST">
-                            <?php
-session_start();
-$conn = new mysqli("localhost", "root", "", "mbms_db");
-
-if (isset($_REQUEST['login'])) {
-    $username = mysqli_real_escape_string($conn, $_REQUEST['username']);
-    $pwd = mysqli_real_escape_string($conn, $_REQUEST['pwd']);
-    
-    $fetch_query = mysqli_query($conn, "SELECT * FROM tbl_employee WHERE username ='$username' AND password = '$pwd'");
-    if (mysqli_num_rows($fetch_query) > 0) {
-        $data = mysqli_fetch_array($fetch_query);
-        $name = $data['first_name'] . ' ' . $data['last_name'];
-        $role = $data['role'];
-        $_SESSION['name'] = $name; 
-        $_SESSION['username'] = $username; 
-        $_SESSION['role'] = $role;
-        header('location:system/dashboard.php');
-    } else {
-        $msg = "Incorrect login details.";
-    }
-}
-?>
-
                                 <div class="form-group mb-3">
-                                    <label class="label" for="name">Username</label>
+                                    <label class="label" for="username">Username</label>
                                     <input type="text" class="form-control" placeholder="Enter your username" id="username" name="username" required>
                                 </div>
                                 <div class="form-group mb-3">
-                                    <label class="label" for="password">Password</label>
+                                    <label class="label" for="pwd">Password</label>
                                     <input type="password" class="form-control" placeholder="Enter your password" id="pwd" name="pwd" required>
                                     <input type="checkbox" onclick="togglePassword('pwd')"> Show Password
                                 </div>
 
-                                <span style="color:#e11584;"><?php if(!empty($msg)){ echo $msg; } ?></span>
+                                <span style="color:#e11584;"><?php if(!empty($msg)){ echo htmlspecialchars($msg); } ?></span>
                                 
                                 <div class="form-group">
                                     <button type="submit" name="login" value="Log In" class="form-control btn btn-dark rounded submit px-3">Log In</button>
                                     <a href="forgot_password.php">Forgot Password?</a>
                                 </div>
                                 <div class="text-center">
-                                    <a href="/Mothers_Book/index.php" class="highlight-link">Back to Home</a>
+                                    <a href="../index.php" class="highlight-link">Back to Home</a>
                               </div>
                             </form>
                         </div>

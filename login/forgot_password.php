@@ -1,3 +1,36 @@
+<?php
+session_start();
+include('system/includes/connection.php');
+
+$msg = "";
+if (isset($_POST['change_password'])) {
+    $emailid = mysqli_real_escape_string($conn, $_POST['emailid']);
+    $new_password = mysqli_real_escape_string($conn, $_POST['new_password']);
+    $confirm_password = mysqli_real_escape_string($conn, $_POST['confirm_password']);
+
+    // Check if the email exists in the database
+    $check_email_query = "SELECT * FROM tbl_employee WHERE emailid='$emailid'";
+    $email_result = mysqli_query($conn, $check_email_query);
+
+    if ($email_result && mysqli_num_rows($email_result) > 0) {
+        if ($new_password === $confirm_password) {
+            // Update password if email is found and passwords match
+            $update_query = "UPDATE tbl_employee SET password='$new_password' WHERE emailid='$emailid'";
+            
+            if (mysqli_query($conn, $update_query)) {
+                $msg = "Password successfully changed!";
+            } else {
+                $msg = "Error updating password. Please try again.";
+            }
+        } else {
+            $msg = "New password and confirm password do not match.";
+        }
+    } else {
+        // Email not found in the database
+        echo "<script>alert('Email not found in the records.');</script>";
+    }
+}
+?>
 <!doctype html>
 <html lang="en">
 <head>
@@ -33,45 +66,12 @@
             <div class="row justify-content-center">
                 <div class="col-md-12 col-lg-10">
                     <div class="wrap d-md-flex">
-                        <div class="img" style="background-image: url(images/logo/logob.png);"></div>
+                        <div class="img" style="images/logo/logob.png);"></div>
                         <div class="login-wrap p-4 p-md-5">
                             <h5 class="text-center mb-4">Change Password</h5>
                             <form name="changePasswordForm" action="" method="POST" onsubmit="return validateForm()">
-                                <?php
-                                session_start();
-                                $conn = new mysqli("localhost", "root", "", "mbms_db");
-                                
-                                if (isset($_POST['change_password'])) {
-                                    $emailid = mysqli_real_escape_string($conn, $_POST['emailid']);
-                                    $new_password = mysqli_real_escape_string($conn, $_POST['new_password']);
-                                    $confirm_password = mysqli_real_escape_string($conn, $_POST['confirm_password']);
-
-                                    // Check if the email exists in the database
-                                    $check_email_query = "SELECT * FROM tbl_employee WHERE emailid='$emailid'";
-                                    $email_result = mysqli_query($conn, $check_email_query);
-
-                                    if (mysqli_num_rows($email_result) > 0) {
-                                        if ($new_password === $confirm_password) {
-                                            // Update password if email is found and passwords match
-                                            $update_query = "UPDATE tbl_employee SET password='$new_password' WHERE emailid='$emailid'";
-                                            
-                                            if (mysqli_query($conn, $update_query)) {
-                                                $msg = "Password successfully changed!";
-                                            } else {
-                                                $msg = "Error updating password. Please try again.";
-                                            }
-                                        } else {
-                                            $msg = "New password and confirm password do not match.";
-                                        }
-                                    } else {
-                                        // Email not found in the database
-                                        echo "<script>alert('Email not found in the records.');</script>";
-                                    }
-                                }
-                                ?>
-
                                 <div class="form-group mb-3">
-                                    <label class="label" for="email">Email</label>
+                                    <label class="label" for="emailid">Email</label>
                                     <input type="email" class="form-control" placeholder="Enter your email" id="emailid" name="emailid" required>
                                 </div>
                                 
@@ -84,17 +84,16 @@
                                     <label class="label" for="confirm_password">Confirm New Password</label>
                                     <input type="password" class="form-control" placeholder="Confirm your new password" id="confirm_password" name="confirm_password" required>
                                     <input type="checkbox" onclick="togglePasswordVisibility()"> Show Password
-
                                 </div>
                                 
-                                <span style="color:#e11584;"><?php if(!empty($msg)){ echo $msg; } ?></span>
+                                <span style="color:#e11584;"><?php if(!empty($msg)){ echo htmlspecialchars($msg); } ?></span>
 
                                 <div class="form-group">
                                     <button type="submit" name="change_password" class="form-control btn btn-dark rounded submit px-3">Change Password</button>
                                 </div>
 
                                 <div class="text-center">
-                                    <a href="/Mothers_Book/login/index.php" class="highlight-link">Back to Login</a>
+                                    <a href="index.php" class="highlight-link">Back to Login</a>
                                 </div>
                             </form>
                         </div>
@@ -108,34 +107,27 @@
     <script src="js/popper.js"></script>
     <script src="js/bootstrap.min.js"></script>
     <script src="js/main.js"></script>
-
     <script>
         function togglePasswordVisibility() {
-            var newPassword = document.getElementById("new_password");
-            var confirmPassword = document.getElementById("confirm_password");
-            if (newPassword.type === "password") {
-                newPassword.type = "text";
-                confirmPassword.type = "text";
+            var newPasswordField = document.getElementById("new_password");
+            var confirmPasswordField = document.getElementById("confirm_password");
+            if (newPasswordField.type === "password" || confirmPasswordField.type === "password") {
+                newPasswordField.type = "text";
+                confirmPasswordField.type = "text";
             } else {
-                newPassword.type = "password";
-                confirmPassword.type = "password";
+                newPasswordField.type = "password";
+                confirmPasswordField.type = "password";
             }
         }
 
         function validateForm() {
             var newPassword = document.getElementById("new_password").value;
             var confirmPassword = document.getElementById("confirm_password").value;
-            var uppercasePattern = /[A-Z]/;
-            if (!uppercasePattern.test(newPassword)) {
-                alert("Password must contain at least one uppercase letter.");
-                return false;
-            }
-            
-            if (newPassword !== confirmPassword) {
-                alert("New password and confirm password do not match.");
-                return false;
-            }
 
+            if (newPassword !== confirmPassword) {
+                alert("Passwords do not match.");
+                return false;
+            }
             return true;
         }
     </script>
