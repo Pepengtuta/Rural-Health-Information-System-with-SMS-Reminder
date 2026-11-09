@@ -234,3 +234,7 @@ This system was conceptualized, designed, and developed by:
 ## 📄 License
 
 Developed for academic / capstone project purposes for **Barangay Laguinbanua East Health Center, Numancia, Aklan**. All rights reserved &copy; 2024.
+
+
+## ADMIN DASHBOARD
+![image alt](login/images/screenshots/admindashboard.png)
