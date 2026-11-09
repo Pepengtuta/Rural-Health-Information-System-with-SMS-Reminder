@@ -2,16 +2,16 @@
 // Check if running on localhost (XAMPP) or online (InfinityFree)
 if ($_SERVER['HTTP_HOST'] === 'localhost' || $_SERVER['SERVER_NAME'] === 'localhost') {
     // Local XAMPP Settings
-    $server   = "localhost";
+    $server = "localhost";
     $username = "root";
     $password = "";
     $database = "mbms_db";
 } else {
     // InfinityFree Settings (replace with your details from InfinityFree vPanel)
-    $server   = "sqlXXX.infinityfree.com"; // Your MySQL Hostname from InfinityFree
-    $username = "if0_XXXXXXXX";           // Your MySQL Username
-    $password = "YOUR_ACCOUNT_PASSWORD";   // Your InfinityFree Password
-    $database = "if0_XXXXXXXX_mbms_db";   // Your Database Name
+    $server = "sql310.infinityfree.com"; // Your MySQL Hostname from InfinityFree
+    $username = "if0_43391381";           // Your MySQL Username
+    $password = "GUYnrxYdeeE";   // Your InfinityFree Password
+    $database = "if0_43391381_mbms_db";   // Your Database Name
 }
 
 $connection = mysqli_connect($server, $username, $password, $database);
