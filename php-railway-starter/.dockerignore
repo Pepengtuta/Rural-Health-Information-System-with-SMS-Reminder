@@ -1,0 +1,11 @@
+.git
+.gitignore
+.vscode
+.env
+.env.*
+*.sql
+*.log
+composer.lock
+vendor/
+node_modules/
+
